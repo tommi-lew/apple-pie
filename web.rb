@@ -5,9 +5,14 @@ get '/' do
 end
 
 post '/pt_activity_web_hook' do
-  kind = params['kind']
-  story_id = params['id']
-  text = params['text']
+  request_body = request.body.read
+  json_request_body = JSON.parse(request_body)
+
+  puts request_body
+
+  kind = json_request_body['kind']
+  story_id = json_request_body['id']
+  text = json_request_body['text']
 
   if !kind.eql?('comment_create_activity')
     log 'Do not handle this activity.'
