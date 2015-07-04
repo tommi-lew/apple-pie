@@ -77,9 +77,36 @@ describe 'Sinatra Application' do
 
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
-        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status(''))
+        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :ok))
 
         post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
+      end
+    end
+  end
+
+  describe 'POST /gh_webhook' do
+    describe 'action is not opened' do
+      it 'logs and stop request' do
+        expect_any_instance_of(Sinatra::Application).to receive(:log).with('Do not handle this action.')
+
+        post '/gh_webhook', { action: 'merged' }.to_json
+
+        expect(last_response.status).to eq(200)
+      end
+    end
+
+    describe 'ui status text' do
+      it 'update body with ui status text' do
+        ENV['GITHUB_USER'] = 'github_user'
+        ENV['GITHUB_REPO'] = 'github_repo'
+
+        @github = double('Github')
+        @pull_requests_ns = double('Pull Request Namespace')
+        expect(Github).to receive(:new).and_return(@github)
+        expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
+        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :pending))
+
+        post '/gh_webhook', { action: 'opened', number: 1, pull_request: { body: '' } }.to_json
       end
     end
   end
@@ -109,7 +136,7 @@ describe 'Sinatra Application' do
         ***********DO NOT ADD TEXT BELOW HERE************
       EOS
 
-      expect(update_ui_status(original_pr_body)).to eq(expected_pr_body)
+      expect(update_ui_status(original_pr_body, :ok)).to eq(expected_pr_body)
     end
 
     context 'pull request body does not contain ui status' do
@@ -123,7 +150,7 @@ describe 'Sinatra Application' do
           ***********DO NOT ADD TEXT BELOW HERE************
         EOS
 
-        expect(update_ui_status(original_pr_body)).to eq(expected_pr_body)
+        expect(update_ui_status(original_pr_body, :ok)).to eq(expected_pr_body)
       end
     end
   end
