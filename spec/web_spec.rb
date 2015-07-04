@@ -26,7 +26,7 @@ describe 'Sinatra Application' do
 
       context 'appropriate text not found' do
         it 'logs and stop request' do
-          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action.')
+          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action, ui approval text not found.')
 
           post '/pt_activity_web_hook', { kind: 'comment_create_activity', text: 'quick brown fox' }.to_json
 
@@ -55,7 +55,7 @@ describe 'Sinatra Application' do
 
       describe 'pull request not found' do
         it 'logs and stop request' do
-          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action.')
+          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action, no matching pull requests.')
 
           pull_requests = []
 

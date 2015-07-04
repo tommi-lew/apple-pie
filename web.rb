@@ -20,7 +20,7 @@ post '/pt_activity_web_hook' do
   end
 
   if !ui_approval_text?(text)
-    log 'No further action.'
+    log 'No further action, ui approval text not found.'
     halt
   end
 
@@ -29,7 +29,7 @@ post '/pt_activity_web_hook' do
   pull_request = pull_requests.find{|pr| pr.title[/#{story_id}/] }
 
   if !pull_request
-    log 'No further action.'
+    log 'No further action, no matching pull requests.'
     halt
   end
 
