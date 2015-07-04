@@ -120,10 +120,13 @@ describe 'Sinatra Application' do
 
   describe '#update_ui_status' do
     it 'returns text with updated ui status' do
+      Timecop.freeze
+
       original_pr_body = "Hello world. This pull request is about\n\n"
       original_pr_body += <<-EOS.gsub(/^\s+/, '')
         ********************UI STATUS********************
         UI :hand:
+        Updated at #{Time.now}
         ***********DO NOT ADD TEXT BELOW HERE************
       EOS
 
@@ -131,6 +134,7 @@ describe 'Sinatra Application' do
       expected_pr_body += <<-EOS.gsub(/^\s+/, '')
         ********************UI STATUS********************
         :+1:
+        Updated at #{Time.now}
         ***********DO NOT ADD TEXT BELOW HERE************
       EOS
 
@@ -145,6 +149,7 @@ describe 'Sinatra Application' do
         expected_pr_body += <<-EOS.gsub(/^\s+/, '')
           ********************UI STATUS********************
           :+1:
+          Updated at #{Time.now}
           ***********DO NOT ADD TEXT BELOW HERE************
         EOS
 

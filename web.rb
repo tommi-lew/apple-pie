@@ -109,6 +109,7 @@ def update_ui_status(pull_request_body, status)
   pr_body_without_ui_status += <<-EOS.gsub(/^\s+/, '')
     ********************UI STATUS********************
     #{status_emoji}
+    Updated at #{Time.now}
     ***********DO NOT ADD TEXT BELOW HERE************
   EOS
 
