@@ -5,6 +5,12 @@ describe 'Sinatra Application' do
     Sinatra::Application
   end
 
+  let(:logger) { instance_spy('Logger') }
+
+  before do
+    allow(Logger).to receive(:new).with(any_args).and_return(logger)
+  end
+
   describe 'GET /' do
     it "says '200'" do
       get '/'
@@ -16,20 +22,18 @@ describe 'Sinatra Application' do
     context 'pivotal tracker activity' do
       describe 'kind is not comment_create_activity' do
         it 'logs and stop request' do
-          expect_any_instance_of(Sinatra::Application).to receive(:log).with('Do not handle this activity.')
-
           post '/pt_activity_web_hook', { kind: 'random_activity' }.to_json
 
+          expect(logger).to have_received(:info).with('Do not handle this activity.')
           expect(last_response.status).to eq(200)
         end
       end
 
       context 'appropriate text not found' do
         it 'logs and stop request' do
-          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action, ui approval text not found.')
-
           post '/pt_activity_web_hook', { kind: 'comment_create_activity', changes: [{ new_values: { text: 'quick brown fox' } }] }.to_json
 
+          expect(logger).to have_received(:info).with('No further action, ui approval text not found.')
           expect(last_response.status).to eq(200)
         end
       end
@@ -55,8 +59,6 @@ describe 'Sinatra Application' do
 
       describe 'pull request not found' do
         it 'logs and stop request' do
-          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action, no matching pull requests.')
-
           pull_requests = []
 
           expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
@@ -64,6 +66,7 @@ describe 'Sinatra Application' do
 
           post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
 
+          expect(logger).to have_received(:info).with('No further action, no matching pull requests.')
           expect(last_response.status).to eq(200)
         end
       end
@@ -87,10 +90,9 @@ describe 'Sinatra Application' do
   describe 'POST /gh_webhook' do
     describe 'action is not opened' do
       it 'logs and stop request' do
-        expect_any_instance_of(Sinatra::Application).to receive(:log).with('Do not handle this action.')
-
         post '/gh_webhook', { action: 'merged' }.to_json
 
+        expect(logger).to have_received(:info).with('Do not handle this action.')
         expect(last_response.status).to eq(200)
       end
     end

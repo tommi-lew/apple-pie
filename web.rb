@@ -8,38 +8,38 @@ post '/pt_activity_web_hook' do
   request_body = request.body.read
   json_request_body = JSON.parse(request_body)
 
-  puts request_body
+  logger.info request_body
 
   kind = json_request_body['kind']
   story_id = (json_request_body['primary_resources']) ? json_request_body['primary_resources'][0]['id'] : nil
   text = (json_request_body['changes']) ? json_request_body['changes'][0]['new_values']['text'] : nil
 
   if !kind.eql?('comment_create_activity')
-    log 'Do not handle this activity.'
+    logger.info 'Do not handle this activity.'
     halt
   end
 
   if !ui_approval_text?(text)
-    log 'No further action, ui approval text not found.'
+    logger.info 'No further action, ui approval text not found.'
     halt
   end
 
-  puts "PT Story ID: #{story_id}"
+  logger.info "PT Story ID: #{story_id}"
 
   github = Github.new(user: ENV['GITHUB_USER'], repo: ENV['GITHUB_REPO'])
   pull_requests = github.pull_requests.list
   pull_request = pull_requests.find{|pr| !!pr.title.index(story_id.to_s) }
 
   if !pull_request
-    log 'No further action, no matching pull requests.'
+    logger.info 'No further action, no matching pull requests.'
     halt
   end
 
   updated_pull_request_body = update_ui_status(pull_request.body, :ok)
 
-  log "PR title: #{pull_request.title}"
-  log "PR number: #{pull_request.number}"
-  log "PR current body: #{pull_request.body}"
+  logger.info "PR title: #{pull_request.title}"
+  logger.info "PR number: #{pull_request.number}"
+  logger.info "PR current body: #{pull_request.body}"
 
   response = github.pull_requests.update(
     ENV['GITHUB_USER'],
@@ -48,7 +48,7 @@ post '/pt_activity_web_hook' do
     body: updated_pull_request_body
   )
 
-  log "Pull request update response status: #{response.status}"
+  logger.info "Pull request update response status: #{response.status}"
 
   halt
 end
@@ -57,14 +57,14 @@ post '/gh_webhook' do
   request_body = request.body.read
   json_request_body = JSON.parse(request_body)
 
-  puts request_body
+  logger.info request_body
 
   action = json_request_body['action']
   pr_number = json_request_body['number']
   body = (json_request_body['pull_request']) ? json_request_body['pull_request']['body'] : nil
 
   if !action.eql?('opened')
-    log 'Do not handle this action.'
+    logger.info 'Do not handle this action.'
     halt
   end
 
@@ -116,6 +116,3 @@ def update_ui_status(pull_request_body, status)
   pr_body_without_ui_status
 end
 
-def log(text)
-  puts text
-end
