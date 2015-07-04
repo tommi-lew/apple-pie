@@ -5,17 +5,8 @@ RACK_ENV ||= ENV['RACK_ENV'] || 'development'
 require 'bundler/setup'
 require 'sinatra'
 require 'sinatra/reloader' if development?
-require 'redis'
 require 'json'
 require 'github_api'
-
-# Redis
-if RACK_ENV == 'production'
-  uri = URI.parse(ENV['REDIS_URL'])
-  $redis = Redis.new(host: uri.host, port: uri.port, password: uri.password)
-else
-  $redis = Redis.new
-end
 
 # Github
 Github.configure do |c|

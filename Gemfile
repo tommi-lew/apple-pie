@@ -4,7 +4,6 @@ ruby '2.2.0'
 
 gem 'sinatra'
 gem 'unicorn'
-gem 'redis'
 gem 'github_api'
 
 group :development do

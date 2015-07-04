@@ -41,7 +41,6 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     raindrops (0.14.0)
-    redis (3.2.1)
     rspec (3.3.0)
       rspec-core (~> 3.3.0)
       rspec-expectations (~> 3.3.0)
@@ -85,7 +84,6 @@ DEPENDENCIES
   github_api
   nyan-cat-formatter
   rack-test
-  redis
   rspec
   sinatra
   sinatra-contrib
