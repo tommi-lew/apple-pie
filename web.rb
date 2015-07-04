@@ -12,7 +12,7 @@ post '/pt_activity_web_hook' do
 
   kind = json_request_body['kind']
   story_id = (json_request_body['primary_resource']) ? json_request_body['primary_resource'][0]['id'] : nil
-  text = (json_request_body['changes']) ? json_request_body['changes'][0]['text'] : nil
+  text = (json_request_body['changes']) ? json_request_body['changes'][0]['new_values']['text'] : nil
 
   if !kind.eql?('comment_create_activity')
     log 'Do not handle this activity.'
