@@ -35,12 +35,14 @@ post '/pt_activity_web_hook' do
 
   updated_pull_request_body = update_ui_status(pull_request.body)
 
-  github.pull_requests.update(
+  response = github.pull_requests.update(
     ENV['GITHUB_USER'],
     ENV['GITHUB_REPO'],
     pull_request.number,
     body: updated_pull_request_body
   )
+
+  log "Pull request update response status: #{response.status}"
 
   halt
 end
