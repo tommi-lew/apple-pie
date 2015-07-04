@@ -50,7 +50,7 @@ describe 'Sinatra Application' do
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
 
-        post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resource: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
+        post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
       end
 
       describe 'pull request not found' do
@@ -62,7 +62,7 @@ describe 'Sinatra Application' do
           expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
           expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
 
-          post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resource: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
+          post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
 
           expect(last_response.status).to eq(200)
         end
@@ -79,7 +79,7 @@ describe 'Sinatra Application' do
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
         expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status(''))
 
-        post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resource: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
+        post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
       end
     end
   end

@@ -11,7 +11,7 @@ post '/pt_activity_web_hook' do
   puts request_body
 
   kind = json_request_body['kind']
-  story_id = (json_request_body['primary_resource']) ? json_request_body['primary_resource'][0]['id'] : nil
+  story_id = (json_request_body['primary_resources']) ? json_request_body['primary_resources'][0]['id'] : nil
   text = (json_request_body['changes']) ? json_request_body['changes'][0]['new_values']['text'] : nil
 
   if !kind.eql?('comment_create_activity')
@@ -24,9 +24,11 @@ post '/pt_activity_web_hook' do
     halt
   end
 
+  puts "PT Story ID: #{story_id}"
+
   github = Github.new(user: ENV['GITHUB_USER'], repo: ENV['GITHUB_REPO'])
   pull_requests = github.pull_requests.list
-  pull_request = pull_requests.find{|pr| pr.title[/#{story_id}/] }
+  pull_request = pull_requests.find{|pr| !!pr.title.index(story_id.to_s) }
 
   if !pull_request
     log 'No further action, no matching pull requests.'
@@ -34,6 +36,10 @@ post '/pt_activity_web_hook' do
   end
 
   updated_pull_request_body = update_ui_status(pull_request.body)
+
+  log "PR title: #{pull_request.title}"
+  log "PR number: #{pull_request.number}"
+  log "PR current body: #{pull_request.body}"
 
   response = github.pull_requests.update(
     ENV['GITHUB_USER'],
