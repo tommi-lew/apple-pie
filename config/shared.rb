@@ -16,3 +16,10 @@ if RACK_ENV == 'production'
 else
   $redis = Redis.new
 end
+
+# Github
+Github.configure do |c|
+  c.user        = ENV['GITHUB_USER']
+  c.repo        = ENV['GITHUB_REPO']
+  c.oauth_token = ENV['GITHUB_TOKEN']
+end
