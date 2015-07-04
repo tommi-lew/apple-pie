@@ -120,17 +120,15 @@ describe 'Sinatra Application' do
 
   describe '#update_ui_status' do
     it 'returns text with updated ui status' do
-      original_pr_body = <<-EOS.gsub(/^\s+/, '')
-        Hello world. This pull request is about
-
+      original_pr_body = "Hello world. This pull request is about\n\n"
+      original_pr_body += <<-EOS.gsub(/^\s+/, '')
         ********************UI STATUS********************
-        UI pending
+        UI :hand:
         ***********DO NOT ADD TEXT BELOW HERE************
       EOS
 
-      expected_pr_body = <<-EOS.gsub(/^\s+/, '')
-        Hello world. This pull request is about
-
+      expected_pr_body = "Hello world. This pull request is about\n\n"
+      expected_pr_body += <<-EOS.gsub(/^\s+/, '')
         ********************UI STATUS********************
         :+1:
         ***********DO NOT ADD TEXT BELOW HERE************
@@ -143,7 +141,7 @@ describe 'Sinatra Application' do
       it 'adds ui status' do
         original_pr_body = 'Hello world. This pull request is about'
 
-        expected_pr_body = original_pr_body + "\n"
+        expected_pr_body = original_pr_body + "\n\n"
         expected_pr_body += <<-EOS.gsub(/^\s+/, '')
           ********************UI STATUS********************
           :+1:

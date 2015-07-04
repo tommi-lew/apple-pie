@@ -105,7 +105,7 @@ def update_ui_status(pull_request_body, status)
                                 pull_request_body
                               end
 
-  pr_body_without_ui_status += "\n"
+  pr_body_without_ui_status += "\n\n"
   pr_body_without_ui_status += <<-EOS.gsub(/^\s+/, '')
     ********************UI STATUS********************
     #{status_emoji}
