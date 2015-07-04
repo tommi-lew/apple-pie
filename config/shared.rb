@@ -7,6 +7,7 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'redis'
 require 'json'
+require 'github_api'
 
 # Redis
 if RACK_ENV == 'production'
