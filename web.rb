@@ -10,11 +10,13 @@ post '/pt_activity_web_hook' do
   text = params['text']
 
   if !kind.eql?('comment_create_activity')
-    respond_with_json({ message: 'Do not handle this activity.' })
+    log 'Do not handle this activity.'
+    halt
   end
 
   if !ui_approval_text?(text)
-    respond_with_json({ message: 'No further action.' })
+    log 'No further action.'
+    halt
   end
 
   github = Github.new(user: ENV['GITHUB_USER'], repo: ENV['GITHUB_REPO'])
@@ -22,7 +24,8 @@ post '/pt_activity_web_hook' do
   pull_request = pull_requests.find{|pr| pr.title[/#{story_id}/] }
 
   if !pull_request
-    respond_with_json({ message: 'No further action.' })
+    log 'No further action.'
+    halt
   end
 
   updated_pull_request_body = update_ui_status(pull_request.body)
@@ -35,10 +38,6 @@ post '/pt_activity_web_hook' do
   )
 
   halt
-end
-
-def respond_with_json(response)
-  halt response.to_json
 end
 
 def ui_approval_text?(text)
@@ -63,4 +62,8 @@ def update_ui_status(pull_request_body)
   EOS
 
   pr_body_without_ui_status
+end
+
+def log(text)
+  puts text
 end

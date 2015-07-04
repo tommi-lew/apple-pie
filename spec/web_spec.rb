@@ -15,22 +15,22 @@ describe 'Sinatra Application' do
   describe 'POST /pt_activity_web_hook' do
     context 'pivotal tracker activity' do
       describe 'kind is not comment_create_activity' do
-        it 'response with 200 and message' do
+        it 'logs and stop request' do
+          expect_any_instance_of(Sinatra::Application).to receive(:log).with('Do not handle this activity.')
+
           post '/pt_activity_web_hook', kind: 'random_activity'
 
-          response = JSON.parse(last_response.body)
           expect(last_response.status).to eq(200)
-          expect(response['message']).to eq('Do not handle this activity.')
         end
       end
 
       context 'appropriate text not found' do
-        it 'response with 200 and message' do
+        it 'logs and stop request' do
+          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action.')
+
           post '/pt_activity_web_hook', kind: 'comment_create_activity', text: 'quick brown fox'
 
-          response = JSON.parse(last_response.body)
           expect(last_response.status).to eq(200)
-          expect(response['message']).to eq('No further action.')
         end
       end
     end
@@ -54,7 +54,9 @@ describe 'Sinatra Application' do
       end
 
       describe 'pull request not found' do
-        it 'response with 200 and message' do
+        it 'logs and stop request' do
+          expect_any_instance_of(Sinatra::Application).to receive(:log).with('No further action.')
+
           pull_requests = []
 
           expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
@@ -62,9 +64,7 @@ describe 'Sinatra Application' do
 
           post '/pt_activity_web_hook', kind: 'comment_create_activity', id: 11111111, text: 'ui ok'
 
-          response = JSON.parse(last_response.body)
           expect(last_response.status).to eq(200)
-          expect(response['message']).to eq('No further action.')
         end
       end
 
