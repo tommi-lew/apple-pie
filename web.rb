@@ -70,7 +70,7 @@ def update_ui_status(pull_request_body)
   pr_body_without_ui_status += "\n"
   pr_body_without_ui_status += <<-EOS.gsub(/^\s+/, '')
     ********************UI STATUS********************
-    UI :)
+    :+1:
     ***********DO NOT ADD TEXT BELOW HERE************
   EOS
 

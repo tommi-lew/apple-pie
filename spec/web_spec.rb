@@ -105,7 +105,7 @@ describe 'Sinatra Application' do
         Hello world. This pull request is about
 
         ********************UI STATUS********************
-        UI :)
+        :+1:
         ***********DO NOT ADD TEXT BELOW HERE************
       EOS
 
@@ -119,7 +119,7 @@ describe 'Sinatra Application' do
         expected_pr_body = original_pr_body + "\n"
         expected_pr_body += <<-EOS.gsub(/^\s+/, '')
           ********************UI STATUS********************
-          UI :)
+          :+1:
           ***********DO NOT ADD TEXT BELOW HERE************
         EOS
 
