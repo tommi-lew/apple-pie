@@ -49,9 +49,9 @@ describe 'Sinatra Application' do
       it 'looks for a matching pull request based on the pivotal tracker story id' do
         pull_requests = []
         pull_requests << instance_double('pull_request', title: '[#22222222] Story 2')
-        pull_requests << instance_double('pull_request', title: '[#11111111] Story 1', body: '')
+        pull_requests << instance_double('pull_request', title: '[#11111111] Story 1', body: '', number: 1)
 
-        expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
+        expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
 
         post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
@@ -81,7 +81,9 @@ describe 'Sinatra Application' do
 
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
-        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :ok)).and_return(pull_request_update_response)
+        expect(@pull_requests_ns).to receive(:update).
+                                         with('github_user', 'github_repo', 1, body: update_ui_status('', :ok)).
+                                         and_return(pull_request_update_response)
 
         post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
       end
@@ -105,9 +107,12 @@ describe 'Sinatra Application' do
 
         @github = double('Github')
         @pull_requests_ns = double('Pull Request Namespace')
+        pull_request_update_response = double('pull_request_update_response', status: 200)
         expect(Github).to receive(:new).and_return(@github)
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
-        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :pending))
+        expect(@pull_requests_ns).to receive(:update).
+                                         with('github_user', 'github_repo', 1, body: update_ui_status('', :pending))
+                                         .and_return(pull_request_update_response)
 
         post '/gh_webhook', { action: 'opened', number: 1, pull_request: { body: '' } }.to_json
       end
