@@ -79,7 +79,7 @@ post '/gh_webhook' do
       body: updated_pull_request_body
   )
 
-  log "Pull request update response status: #{response.status}"
+  logger.info "Pull request update response status: #{response.status}"
 
   halt
 end
