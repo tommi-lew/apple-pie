@@ -8,6 +8,10 @@ require 'sinatra/reloader' if development?
 require 'json'
 require 'github_api'
 
+configure :production, :development, :test do
+  enable :logging
+end
+
 # Github
 Github.configure do |c|
   c.user        = ENV['GITHUB_USER']
