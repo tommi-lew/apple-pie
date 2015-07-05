@@ -50,10 +50,11 @@ describe 'Sinatra Application' do
         pull_requests = []
         pull_requests << instance_double('pull_request', title: '[#22222222] Story 2')
         pull_requests << instance_double('pull_request', title: '[#11111111] Story 1', body: '', number: 1)
+        pull_request_update_response = double('pull_request_update_response', status: 200)
 
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
-        expect(@pull_requests_ns).to receive(:update).with(any_args)
+        expect(@pull_requests_ns).to receive(:update).with(any_args).and_return(pull_request_update_response)
 
         post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
       end
