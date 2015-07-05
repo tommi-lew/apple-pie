@@ -49,7 +49,7 @@ describe 'Sinatra Application' do
       it 'looks for a matching pull request based on the pivotal tracker story id' do
         pull_requests = []
         pull_requests << instance_double('pull_request', title: '[#22222222] Story 2')
-        pull_requests << instance_double('pull_request', title: '[#11111111] Story 1')
+        pull_requests << instance_double('pull_request', title: '[#11111111] Story 1', body: '')
 
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
@@ -77,10 +77,11 @@ describe 'Sinatra Application' do
 
         pull_request = instance_double('pull_request', title: '11111111', number: 1, body: '')
         pull_requests = [pull_request]
+        pull_request_update_response = double('pull_request_update_response', status: 200)
 
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
-        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :ok))
+        expect(@pull_requests_ns).to receive(:update).with('github_user', 'github_repo', 1, body: update_ui_status('', :ok)).and_return(pull_request_update_response)
 
         post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
       end
