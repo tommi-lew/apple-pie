@@ -14,7 +14,9 @@ class ApplePie < Sinatra::Base
       halt
     end
 
-    if !ui_approval_text?(text)
+    status_update = status_from_text(text)
+
+    if status_update.nil?
       logger.info 'No further action, ui approval text not found.'
       halt
     end
@@ -30,7 +32,7 @@ class ApplePie < Sinatra::Base
       halt
     end
 
-    updated_pull_request_body = update_ui_status(pull_request.body, :ok)
+    updated_pull_request_body = update_status(pull_request.body, status_update[:type], status_update[:status])
 
     logger.info "PR title: #{pull_request.title}"
     logger.info "PR number: #{pull_request.number}"
