@@ -1,6 +1,10 @@
 ENV['RACK_ENV'] = 'test'
 
 require_relative File.join('..', 'app.rb')
+
+require 'codeclimate-test-reporter'
+CodeClimate::TestReporter.start
+
 require 'rack/test'
 require 'rspec'
 require 'timecop'
