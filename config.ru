@@ -1,3 +1,3 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require './web.rb'
-run Sinatra::Application
+require './app.rb'
+run ApplePie.new

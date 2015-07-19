@@ -1,6 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 
-require_relative File.join('..', 'web.rb')
+require_relative File.join('..', 'app.rb')
 require 'rack/test'
 require 'rspec'
 require 'timecop'
