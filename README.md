@@ -50,8 +50,8 @@ An integration to reflect the approvals from Product and UI/UX in the Pull Reque
 
 ```
 ~~~~~ Statuses ~~~~~
-UI :+1:
-Feature :hand:
+UI 👍
+Feature ✋
 Updated 2015-01-01 00:00:00 +0800
 ~~~~~ do not add text below ~~~~~
 ```
