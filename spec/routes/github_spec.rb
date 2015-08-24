@@ -31,9 +31,10 @@ describe ApplePie do
         pull_request_update_response = double('pull_request_update_response', status: 200)
         expect(Github).to receive(:new).and_return(@github)
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns)
-        expect(@pull_requests_ns).to receive(:update).
-                                         with('github_user', 'github_repo', 1, body: update_status('', :ui, :pending))
-                                         .and_return(pull_request_update_response)
+        expect(@pull_requests_ns).
+            to receive(:update).
+            with('github_user', 'github_repo', 1, body: update_status('', { ui: :pending }))
+            .and_return(pull_request_update_response)
 
         post '/gh_webhook', { action: 'opened', number: 1, pull_request: { body: '' } }.to_json
       end

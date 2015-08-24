@@ -16,7 +16,7 @@ class ApplePie < Sinatra::Base
 
     github = Github.new(user: ENV['GITHUB_USER'], repo: ENV['GITHUB_REPO'])
 
-    updated_pull_request_body = update_status(body, :ui, :pending)
+    updated_pull_request_body = update_status(body, { ui: :pending, feature: :pending })
 
     response = github.pull_requests.update(
         ENV['GITHUB_USER'],

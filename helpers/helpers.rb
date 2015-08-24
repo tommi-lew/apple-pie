@@ -1,24 +1,23 @@
 def status_from_text(text)
-  type, status = nil, nil
+  result = {}
 
-  case
-    when text.include?('ui ok')
-      type = :ui
-      status = :ok
-    when text.include?('ui un-ok')
-      type = :ui
-      status = :pending
-    when text.include?('feature ok')
-      type = :feature
-      status = :ok
-    when text.include?('feature un-ok')
-      type = :feature
-      status = :pending
-    else
-      nil
+  if text.include?('ui ok')
+    result[:ui]= :ok
   end
 
-  (type && status) ? { type: type, status: status } : nil
+  if text.include?('feature ok')
+    result[:feature] = :ok
+  end
+
+  if text.include?('ui un-ok')
+    result[:ui] = :pending
+  end
+
+  if text.include?('feature un-ok')
+    result[:feature] = :pending
+  end
+
+  result
 end
 
 def statuses_header
@@ -75,11 +74,11 @@ def parse_statuses(pull_request_body)
   { ui: ui, feature: feature }
 end
 
-def update_status(pull_request_body, type, new_status)
+def update_status(pull_request_body, updated_statuses)
   ui_status_index = pull_request_body.index(statuses_header)
 
   statuses = parse_statuses(pull_request_body)
-  statuses[type] = new_status
+  statuses.merge!(updated_statuses)
 
   pr_body_with_new_statuses = if ui_status_index
                                 pull_request_body[0..ui_status_index - 1].gsub(/$\s+/, '')

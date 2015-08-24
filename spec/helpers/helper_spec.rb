@@ -2,14 +2,26 @@ require 'spec_helper'
 
 describe 'Helpers' do
   describe '#status_from_text' do
-    it 'returns type and status' do
-      expect(status_from_text('ui ok')).to eq({ type: :ui, status: :ok })
-      expect(status_from_text('ui un-ok')).to eq({ type: :ui, status: :pending })
+    it 'returns types and their statuses' do
+      text = 'ui ok feature ok'
+      expect(status_from_text(text)).
+          to eq(ui: :ok, feature: :ok)
 
-      expect(status_from_text('feature ok')).to eq({ type: :feature, status: :ok })
-      expect(status_from_text('feature un-ok')).to eq({ type: :feature, status: :pending })
+      text = 'ui un-ok feature un-ok'
+      expect(status_from_text(text)).
+          to eq(ui: :pending, feature: :pending)
+    end
 
-      expect(status_from_text('I have updated...')).to be_nil
+    context 'conflicting status for the same type' do
+      it 'will always be pending' do
+        text = 'ui un-ok ui ok'
+        expect(status_from_text(text)).
+            to eq(ui: :pending)
+
+        text = 'feature un-ok feature ok'
+        expect(status_from_text(text)).
+            to eq(feature: :pending)
+      end
     end
   end
 
@@ -74,6 +86,8 @@ describe 'Helpers' do
     it 'returns text with updated ui status' do
       Timecop.freeze
 
+      updated_statuses = status_from_text('ui ok feature ok')
+
       original_pr_body = "Hello world. This pull request is about\n\n"
       original_pr_body += <<-EOS.gsub(/^\s+/, '')
         ~~~~~ Statuses ~~~~~
@@ -87,16 +101,17 @@ describe 'Helpers' do
       expected_pr_body += <<-EOS.gsub(/^\s+/, '')
         ~~~~~ Statuses ~~~~~
         UI :+1:
-        Feature :hand:
+        Feature :+1:
         Updated #{Time.now}
         ~~~~~  do not add text below ~~~~~
       EOS
 
-      expect(update_status(original_pr_body, :ui, :ok)).to eq(expected_pr_body)
+      expect(update_status(original_pr_body, updated_statuses)).to eq(expected_pr_body)
     end
 
     context 'pull request body does not contain status text' do
       it 'adds statuses' do
+        updated_statuses = status_from_text('feature ok')
         original_pr_body = 'Hello world. This pull request is about'
 
         expected_pr_body = original_pr_body + "\n\n"
@@ -108,7 +123,7 @@ describe 'Helpers' do
           ~~~~~  do not add text below ~~~~~
         EOS
 
-        expect(update_status(original_pr_body, :feature, :ok)).to eq(expected_pr_body)
+        expect(update_status(original_pr_body, updated_statuses)).to eq(expected_pr_body)
       end
     end
   end

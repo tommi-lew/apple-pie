@@ -16,7 +16,7 @@ class ApplePie < Sinatra::Base
 
     status_update = status_from_text(text)
 
-    if status_update.nil?
+    if status_update.empty?
       logger.info 'No further action, ui approval text not found.'
       halt
     end
@@ -32,17 +32,17 @@ class ApplePie < Sinatra::Base
       halt
     end
 
-    updated_pull_request_body = update_status(pull_request.body, status_update[:type], status_update[:status])
+    updated_pull_request_body = update_status(pull_request.body, status_update)
 
     logger.info "PR title: #{pull_request.title}"
     logger.info "PR number: #{pull_request.number}"
     logger.info "PR current body: #{pull_request.body}"
 
     response = github.pull_requests.update(
-        ENV['GITHUB_USER'],
-        ENV['GITHUB_REPO'],
-        pull_request.number,
-        body: updated_pull_request_body
+      ENV['GITHUB_USER'],
+      ENV['GITHUB_REPO'],
+      pull_request.number,
+      body: updated_pull_request_body
     )
 
     logger.info "Pull request update response status: #{response.status}"

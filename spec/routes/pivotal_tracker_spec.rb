@@ -77,10 +77,15 @@ describe ApplePie do
         expect(@github).to receive(:pull_requests).and_return(@pull_requests_ns).twice
         expect(@pull_requests_ns).to receive(:list).and_return(pull_requests)
         expect(@pull_requests_ns).to receive(:update).
-                                         with('github_user', 'github_repo', 1, body: update_status('', :ui, :ok)).
+                                         with('github_user', 'github_repo', 1, body: update_status('', { ui: :ok })).
                                          and_return(pull_request_update_response)
 
-        post '/pt_activity_web_hook', { kind: 'comment_create_activity', primary_resources: [{ id: 11111111 }], changes: [{ new_values: { text: 'ui ok' } }] }.to_json
+        post '/pt_activity_web_hook',
+             {
+               kind: 'comment_create_activity',
+               primary_resources: [{ id: 11111111 }],
+               changes: [{ new_values: { text: 'ui ok' } }]
+             }.to_json
       end
     end
   end
